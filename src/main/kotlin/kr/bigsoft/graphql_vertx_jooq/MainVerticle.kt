@@ -1,65 +1,51 @@
 package kr.bigsoft.graphql_vertx_jooq
 
-import graphql.GraphQL
-import graphql.schema.idl.RuntimeWiring.newRuntimeWiring
-import graphql.schema.idl.SchemaGenerator
-import graphql.schema.idl.SchemaParser
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.Promise
-import io.vertx.core.Vertx
-import io.vertx.ext.web.Router
-import io.vertx.ext.web.handler.BodyHandler
-import io.vertx.ext.web.handler.graphql.GraphQLHandler
+import kr.bigsoft.graphql_vertx_jooq.module.*
+import org.h2.tools.Server
+import java.sql.DriverManager
+import java.util.*
 
 @Suppress("unused")
 class MainVerticle : AbstractVerticle() {
+
+    private val component by lazy {
+        DaggerMainVerticleComponent
+            .builder()
+            .appConfigModule(AppConfigModule())
+            .dBAccessModule(DBAccessModule())
+            .dAOModule(DAOModule())
+            .graphQLModule(GraphQLModule())
+            .routerModule(RouterModule(vertx))
+            .build()
+    }
+
     override fun start(startPromise: Promise<Void>) {
-        val router = setupRouter(vertx) // More on this below
+//        val appPort = components.getAppConfig().appPort
+        val appPort = 8888
         vertx.createHttpServer()
-            .requestHandler(router)
-            .listen(8888) { http ->
+            .requestHandler(component.getRouter())
+            .listen(appPort) { http ->
                 if (http.succeeded()) {
                     startPromise.complete()
-                    println("HTTP server started on port 8888")
+                    println("HTTP server started on port $appPort")
                 } else {
                     startPromise.fail(http.cause())
                 }
             }
-    }
 
-    fun setupRouter(vertx: Vertx) =
-        Router.router(vertx).also { r ->
-            r.route().handler(BodyHandler.create())
-            r.post("/graphql").handler(
-                GraphQLHandler.create(
-                    setupGraphQL() // More on this below
-                )
-            )
+        val h2 = Server.createTcpServer("-tcp", "-tcpAllowOthers", "-tcpPort", "8090", "-webAllowOthers", "-webPort", "8091").start()
+        println("H2 server on ${h2.url}")
+
+        val conn = DriverManager.getConnection("jdbc:h2:tcp:localhost:8090/./graphql-vertx-jooq", "sa", "");
+        val result = conn.prepareStatement("show tables").executeQuery()
+        println("tables:")
+        while(result.next()) {
+            println("   ${result.getString(2)}.${result.getString(1)}")
         }
-
-    fun setupGraphQL() = GraphQL
-        .newGraphQL(buildExecutableSchema())
-        .build()
-
-    val rawSchema = """
-    type Query {
-        hello: String
+        conn.close()
     }
-""".trimIndent()
-
-    fun buildRuntimeWiring() = newRuntimeWiring()
-        .type("Query") {
-            it.dataFetcher("hello") {
-                // Here is the logic for resolving our hello field in Query type
-                // For now we just return a static string
-                "world"
-            }
-        }
-        .build()
-
-    fun buildExecutableSchema() = SchemaGenerator().makeExecutableSchema(parseSchema(), buildRuntimeWiring())
-
-    fun parseSchema() = SchemaParser().parse(rawSchema)
 }
 
 fun main(args: Array<String>) {

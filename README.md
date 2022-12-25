@@ -1,8 +1,5 @@
 # ./mvnw clean
 
-## check read properties
-```.\mvnw properties:read-project-properties@read antrun:run@check-properties```
-
 ## flyway migration
 ```.\mvnw properties:read-project-properties@read flyway:migrate```
 
