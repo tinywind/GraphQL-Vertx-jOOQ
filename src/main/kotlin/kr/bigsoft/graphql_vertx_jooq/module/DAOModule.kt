@@ -16,7 +16,7 @@ class DAOModule {
     @Provides
     @Singleton
     fun provideJooQConfiguration(config: AppConfig): Configuration = DefaultConfiguration().apply {
-        setSQLDialect(SQLDialect.valueOf(config.sqlDialect!!))
+        setSQLDialect(SQLDialect.valueOf(config.sqlDialect))
     }
 
     @Provides

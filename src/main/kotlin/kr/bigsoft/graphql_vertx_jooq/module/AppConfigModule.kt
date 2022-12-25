@@ -28,10 +28,12 @@ class AppConfigModule {
 /**
  * A type safe wrapper over the untyped Properties instance
  */
+@Suppress("unused")
 class AppConfig(private val properties: Properties) {
     val driver get(): String = properties.getProperty("db.driver")!!
     val url get(): String = properties.getProperty("db.url")!!
     val user get(): String? = properties.getProperty("db.user")
     val password get(): String? = properties.getProperty("db.password")
-    val sqlDialect get(): String? = properties.getProperty("jooq.sql.dialect")!!
+    val sqlDialect get(): String = properties.getProperty("jooq.sql.dialect")!!
+    val appPort get(): Int = properties.getProperty("app.port", "9000")!!.toInt()
 }
