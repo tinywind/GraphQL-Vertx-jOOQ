@@ -2,7 +2,7 @@
 
 Requires JDK 21. Run `./mvnw verify` to apply the local H2 migrations, generate DAOs, compile the sources, run the tests, and package the executable JAR.
 
-The application uses the patched Vert.x 4.5 line. Its Vert.x-jOOQ 6.5.5 generator targets jOOQ 3.17, so the build uses the latest compatible 3.17.35 patch; jOOQ 3.21 fails during DAO generation. Netty, Jackson, and Kotlin dependency management override older transitive releases.
+The application uses the patched Vert.x 4.5 line. Its Vert.x-jOOQ 6.5.5 generator targets jOOQ 3.17, so the build uses the latest compatible 3.17.35 patch; jOOQ 3.21 fails during DAO generation. Netty 4.2.19, Jackson, and Kotlin dependency management override older transitive releases. The unchanged GraphQL parser requires ANTLR 4.9.3; ANTLR 4.13.2 cannot deserialize its generated grammar.
 
 The HTTP test covers the hello query, registration, bcrypt password checks, and login token claims. It uses a unique test email in the local H2 database and removes that record afterward.
 
