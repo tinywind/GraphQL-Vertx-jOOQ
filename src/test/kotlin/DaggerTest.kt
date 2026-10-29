@@ -12,9 +12,9 @@ import kotlin.test.assertEquals
 
 @Suppress("JUnitMalformedDeclaration")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ExtendWith(VertxExtension::class)
+@ExtendWith(VertxExtension::class, SigningKeyExtension::class)
 class DaggerTest {
-    var component: DaggerTestVerticleComponent? = null
+    var component: TestVerticleComponent? = null
 
     @BeforeEach
     fun setup(vertx: Vertx, testContext: VertxTestContext) {
@@ -26,7 +26,7 @@ class DaggerTest {
             .dAOModule(DAOModule())
             .graphQLModule(GraphQLModule())
             .routerModule(RouterModule(vertx))
-            .build() as DaggerTestVerticleComponent?
+            .build()
     }
 
     @Test
