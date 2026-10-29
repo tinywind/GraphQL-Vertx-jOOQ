@@ -14,27 +14,28 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>19</maven.compiler.source>
-        <maven.compiler.target>19</maven.compiler.target>
-        <maven.compiler.release>19</maven.compiler.release>
-        <kotlin.compiler.jvmTarget>18</kotlin.compiler.jvmTarget>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <maven.compiler.release>21</maven.compiler.release>
+        <kotlin.compiler.jvmTarget>21</kotlin.compiler.jvmTarget>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <kotlin.code.style>official</kotlin.code.style>
 
-        <maven-shade-plugin.version>3.2.4</maven-shade-plugin.version>
-        <maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-        <exec-maven-plugin.version>3.0.0</exec-maven-plugin.version>
+        <maven-shade-plugin.version>3.6.2</maven-shade-plugin.version>
+        <maven-surefire-plugin.version>3.6.1</maven-surefire-plugin.version>
+        <exec-maven-plugin.version>3.6.4</exec-maven-plugin.version>
 
-        <kotlin.version>1.7.22</kotlin.version>
-        <vertx.version>4.3.7</vertx.version>
-        <junit-jupiter.version>5.7.0</junit-jupiter.version>
-        <jooq.version>3.17.6</jooq.version>
-        <h2.version>2.2.220</h2.version>
-        <dagger.version>2.44.2</dagger.version>
+        <kotlin.version>2.4.21</kotlin.version>
+        <vertx.version>4.5.35</vertx.version>
+        <junit-jupiter.version>6.1.3</junit-jupiter.version>
+        <jooq.version>3.17.35</jooq.version>
+        <h2.version>2.5.252</h2.version>
+        <dagger.version>2.60.1</dagger.version>
 
         <main.verticle>kr.bigsoft.graphql_vertx_jooq.MainVerticle</main.verticle>
         <launcher.class>io.vertx.core.Launcher</launcher.class>
-        <jjwt.version>0.9.1</jjwt.version>
+        <jjwt.version>0.13.0</jjwt.version>
+        <graphql-java.version>20.9</graphql-java.version>
     </properties>
 
     <repositories>
@@ -46,6 +47,44 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit-jupiter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-bom</artifactId>
+                <version>4.1.139.Final</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson</groupId>
+                <artifactId>jackson-bom</artifactId>
+                <version>2.22.4</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-bom</artifactId>
+                <version>${kotlin.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>c3p0</artifactId>
+                <version>0.14.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mchange</groupId>
+                <artifactId>mchange-commons-java</artifactId>
+                <version>0.6.1</version>
+            </dependency>
             <dependency>
                 <groupId>io.vertx</groupId>
                 <artifactId>vertx-stack-depchain</artifactId>
@@ -60,6 +99,43 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web-graphql</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.graphql-java</groupId>
+                    <artifactId>graphql-java</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>33.7.2-jre</version>
+        </dependency>
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>java-dataloader</artifactId>
+            <version>3.2.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.9.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.reactivestreams</groupId>
+            <artifactId>reactive-streams</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>2.0.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>26.1.0</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
@@ -132,7 +208,7 @@
         <dependency>
             <groupId>at.favre.lib</groupId>
             <artifactId>bcrypt</artifactId>
-            <version>0.9.0</version>
+            <version>0.10.2</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -160,6 +236,15 @@
                 <includes>
                     <include>**/*.xml</include>
                     <include>**/*.properties</include>
+                    <include>META-INF/licenses/**</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${project.build.directory}/generated-sources/graphql-java</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>i18n/**</include>
+                    <include>*.g4</include>
                 </includes>
             </resource>
         </resources>
@@ -168,7 +253,7 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>9.10.2</version>
+                <version>13.11.1</version>
                 <executions>
                     <execution>
                         <phase>generate-sources</phase>
@@ -194,6 +279,33 @@
                 </dependencies>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.9.0</version>
+                <executions>
+                    <execution>
+                        <id>unpack-graphql-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.graphql-java</groupId>
+                                    <artifactId>graphql-java</artifactId>
+                                    <version>${graphql-java.version}</version>
+                                    <classifier>sources</classifier>
+                                    <type>jar</type>
+                                    <includes>**/*.java,i18n/**,*.g4</includes>
+                                    <outputDirectory>${project.build.directory}/generated-sources/graphql-java</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.jooq</groupId>
                 <artifactId>jooq-codegen-maven</artifactId>
                 <version>${jooq.version}</version>
@@ -215,6 +327,16 @@
                         <groupId>io.github.jklingsporn</groupId>
                         <artifactId>vertx-jooq-generate</artifactId>
                         <version>6.5.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.reactivestreams</groupId>
+                        <artifactId>reactive-streams</artifactId>
+                        <version>1.0.4</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>io.r2dbc</groupId>
+                        <artifactId>r2dbc-spi</artifactId>
+                        <version>0.9.1.RELEASE</version>
                     </dependency>
                 </dependencies>
                 <configuration>
@@ -254,7 +376,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.16.0</version>
                 <executions>
                     <execution>
                         <id>default-compile</id>
@@ -288,12 +410,14 @@
                 <executions>
                     <execution>
                         <id>kapt</id>
+                        <phase>generate-sources</phase>
                         <goals>
                             <goal>kapt</goal>
                         </goals>
                         <configuration>
                             <sourceDirs>
                                 <sourceDir>${project.build.directory}/generated-sources/jooq</sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/graphql-java</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
                             </sourceDirs>
@@ -301,7 +425,7 @@
                                 <annotationProcessorPath>
                                     <groupId>com.google.dagger</groupId>
                                     <artifactId>dagger-compiler</artifactId>
-                                    <version>2.16</version>
+                                    <version>${dagger.version}</version>
                                 </annotationProcessorPath>
                             </annotationProcessorPaths>
                         </configuration>
@@ -315,6 +439,7 @@
                         <configuration>
                             <sourceDirs>
                                 <sourceDir>${project.build.directory}/generated-sources/jooq</sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/graphql-java</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
                             </sourceDirs>
@@ -322,6 +447,7 @@
                     </execution>
                     <execution>
                         <id>test-kapt</id>
+                        <phase>generate-test-sources</phase>
                         <goals>
                             <goal>test-kapt</goal>
                         </goals>
@@ -334,7 +460,7 @@
                                 <annotationProcessorPath>
                                     <groupId>com.google.dagger</groupId>
                                     <artifactId>dagger-compiler</artifactId>
-                                    <version>2.16</version>
+                                    <version>${dagger.version}</version>
                                 </annotationProcessorPath>
                             </annotationProcessorPaths>
                         </configuration>
@@ -348,6 +474,7 @@
                         <configuration>
                             <sourceDirs>
                                 <sourceDir>${project.build.directory}/generated-sources/jooq</sourceDir>
+                                <sourceDir>${project.build.directory}/generated-sources/graphql-java</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/main/java</sourceDir>
                                 <sourceDir>${project.build.directory}/generated-sources/kapt/test</sourceDir>
@@ -362,7 +489,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <id>generate-sources</id>
@@ -373,6 +500,7 @@
                         <configuration>
                             <sources>
                                 <source>${project.build.directory}/generated-sources/jooq</source>
+                                <source>${project.build.directory}/generated-sources/graphql-java</source>
                                 <source>${project.build.directory}/generated-sources/kapt/compile</source>
                                 <source>${project.build.directory}/generated-sources/kaptKotlin/compile</source>
                                 <source>${project.basedir}/src/main/kotlin</source>
@@ -389,6 +517,7 @@
                         <configuration>
                             <sources>
                                 <source>${project.build.directory}/generated-sources/jooq</source>
+                                <source>${project.build.directory}/generated-sources/graphql-java</source>
                                 <source>${project.build.directory}/generated-sources/kapt/compile</source>
                                 <source>${project.build.directory}/generated-sources/kaptKotlin/compile</source>
                                 <source>${project.build.directory}/generated-sources/kapt/test</source>
@@ -435,6 +564,17 @@
                                 </transformer>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                             </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.EC</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
                             <artifactSet/>
                             <outputFile>${project.build.directory}/${project.artifactId}-${project.version}-fat.jar</outputFile>
                         </configuration>
@@ -451,7 +591,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
-                <version>1.1.0</version>
+                <version>1.3.1</version>
                 <executions>
                     <execution>
                         <id>read</id>

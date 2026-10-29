@@ -36,4 +36,8 @@ class AppConfig(private val properties: Properties) {
     val password get(): String? = properties.getProperty("db.password")
     val sqlDialect get(): String = properties.getProperty("jooq.sql.dialect")!!
     val appPort get(): Int = properties.getProperty("app.port", "9000")!!.toInt()
+    val jwtSigningKey get(): String = System.getProperty("jwt.signing.key")
+        ?: System.getenv("JWT_SIGNING_KEY")
+        ?: properties.getProperty("jwt.signing.key")
+        ?: throw IllegalStateException("Set JWT_SIGNING_KEY or jwt.signing.key to a Base64-encoded key of at least 256 bits")
 }
