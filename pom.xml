@@ -29,7 +29,7 @@
         <vertx.version>4.3.7</vertx.version>
         <junit-jupiter.version>5.7.0</junit-jupiter.version>
         <jooq.version>3.17.6</jooq.version>
-        <h2.version>2.1.214</h2.version>
+        <h2.version>2.2.220</h2.version>
         <dagger.version>2.44.2</dagger.version>
 
         <main.verticle>kr.bigsoft.graphql_vertx_jooq.MainVerticle</main.verticle>
